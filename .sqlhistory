@@ -1,0 +1,9 @@
+select * from iris;
+select count(*) from iris;
+select * from dolt_branches ;
+select count(*) from iris;
+select * from dolt_branches;
+select * from dolt_log limit 10;
+select count(*) from iris as of p55ub59uftc24uu9om7992ce7guiqp4s;
+select count(*) from iris as of "p55ub59uftc24uu9om7992ce7guiqp4s";
+select count(*) from iris as of "HEAD";

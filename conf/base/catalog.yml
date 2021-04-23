@@ -1,0 +1,31 @@
+iris_data:
+  type: pandas.CSVDataSet
+  filepath: data/01_raw/iris.csv
+
+example_test_x:
+  type: pandas.SQLTableDataSet
+  table_name: example_test_x
+  credentials: dolt_credentials
+  save_args:
+    if_exists: replace
+
+example_test_y:
+  type: pandas.SQLTableDataSet
+  table_name: example_test_y
+  credentials: dolt_credentials
+  save_args:
+    if_exists: replace
+
+example_train_x:
+  type: pandas.SQLTableDataSet
+  table_name: example_train_x
+  credentials: dolt_credentials
+  save_args:
+    if_exists: replace
+
+example_train_y:
+  type: pandas.SQLTableDataSet
+  table_name: example_train_y
+  credentials: dolt_credentials
+  save_args:
+    if_exists: replace
