@@ -29,8 +29,9 @@
 """Project settings."""
 from kedro_dolt_demo.hooks import ProjectHooks
 
+DOLT_DATABASE="kedro_dolt_demo"
 # Instantiate and list your project hooks here
-HOOKS = (ProjectHooks(),)
+HOOKS = (ProjectHooks(database=DOLT_DATABASE),)
 
 # List the installed plugins for which to disable auto-registry
 # DISABLE_HOOKS_FOR_PLUGINS = ("kedro-viz",)
