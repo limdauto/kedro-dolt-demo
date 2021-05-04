@@ -6,7 +6,7 @@ example_test_x:
   type: pandas.SQLTableDataSet
   table_name: example_test_x
   credentials:
-    con: mysql://root@localhost:3306/kedro_dolt_demo
+    con: mysql+pymysql://root@localhost:3306/kedro_dolt_demo
   save_args:
     if_exists: replace
 
@@ -15,7 +15,7 @@ example_test_y:
   table_name: example_test_y
   credentials: dolt_credentials
   credentials:
-    con: mysql://root@localhost:3306/kedro_dolt_demo
+    con: mysql+pymysql://root@localhost:3306/kedro_dolt_demo
   save_args:
     if_exists: replace
 
@@ -23,7 +23,7 @@ example_train_x:
   type: pandas.SQLTableDataSet
   table_name: example_train_x
   credentials:
-    con: mysql://root@localhost:3306/kedro_dolt_demo
+    con: mysql+pymysql://root@localhost:3306/kedro_dolt_demo
   save_args:
     if_exists: replace
 
@@ -31,6 +31,6 @@ example_train_y:
   type: pandas.SQLTableDataSet
   table_name: example_train_y
   credentials:
-    con: mysql://root@localhost:3306/kedro_dolt_demo
+    con: mysql+pymysql://root@localhost:3306/kedro_dolt_demo
   save_args:
     if_exists: replace

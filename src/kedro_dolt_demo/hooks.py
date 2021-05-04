@@ -28,10 +28,8 @@
 
 """Project hooks."""
 from typing import Any, Dict, Iterable, Optional
-from pathlib import Path
 
-from doltpy.cli import Dolt, DoltException
-from doltpy.sql import ServerConfig, DoltSQLServerContext
+import pymysql.cursors
 from kedro.config import ConfigLoader
 from kedro.framework.hooks import hook_impl
 from kedro.io import DataCatalog
@@ -39,32 +37,40 @@ from kedro.versioning import Journal
 
 
 class ProjectHooks:
-    def __init__(self):
-        project_path = Path(__file__).parent.parent.parent
-        self.dolt = Dolt(project_path)
-        # self.dolt_sql_server = DoltSQLServerContext(
-        #     self.dolt, ServerConfig(branch="master")
-        # )
+    def __init__(self, database, port: int = 3306, host: str = "localhost", user: str = "root", password: str = ""):
+        self._database = database
+        self._user = user
+        self._port = port
+        self._host = host
+        self._password = password
 
     @hook_impl
     def before_pipeline_run(self):
-        # self.dolt_sql_server.start_server()
         pass
 
     @hook_impl
     def after_pipeline_run(self, run_params: Dict[str, Any]):
-        self.dolt.add(".")
-        try:
-            self.dolt.commit(
-                message=f"Update data from Kedro run {run_params['run_id']}"
-            )
-        except DoltException as e:
-            if "no changes added to commit" in str(e):
-                return
-            raise
-        finally:
-            # self.dolt_sql_server.stop_server()
-            pass
+        connection = pymysql.connect(
+            host=self._host,
+            user=self._user,
+            port=self._port,
+            password=self._password,
+            database=self._database,
+            cursorclass=pymysql.cursors.DictCursor,
+        )
+
+        with connection:
+            with connection.cursor() as cursor:
+                # check status
+                cursor.execute(f"select * from dolt_status")
+                res = cursor.fetchone()
+                if res is None:
+                    return
+
+                # commit changes
+                commit_message = f"Update from kedro run {run_params['run_id']}"
+                cursor.execute(f"select dolt_commit('-am', '{commit_message}')")
+            connection.commit()
 
     @hook_impl
     def register_config_loader(
