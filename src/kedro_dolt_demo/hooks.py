@@ -59,7 +59,6 @@ class KedroDolt:
         self._branch = branch
         self._original_branch = None
 
-    @log_pymysql_error
     @hook_impl
     def before_pipeline_run(self, run_params: Dict[str, Any]):
         if "branch" in run_params["extra_params"] and run_params["extra_params"]["branch"] is not None:
@@ -67,7 +66,6 @@ class KedroDolt:
             self._original_branch = self._active_branch()
             self._checkout_branch(self._branch)
 
-    @log_pymysql_error
     @hook_impl
     def after_pipeline_run(self, run_params: Dict[str, Any]):
         commit_message = self._commit_message(run_params=run_params)

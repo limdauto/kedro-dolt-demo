@@ -44,12 +44,8 @@ def sql_server(doltdb_path):
         p = subprocess.Popen(
             shlex.split("dolt sql-server --max-connections=10 -l=trace"),
         )
-        time.sleep(1)
+        time.sleep(.05)
         yield p
-        #db.sql("create table bar (name text primary key, count bigint)")
-        #db.sql("insert into bar values ('Dilly', 3)")
-        #db.sql("select dolt_commit('-am', 'Initialize bar table')")
-        #yield db
     finally:
         os.chdir(starting_path)
         if p is not None:
