@@ -88,8 +88,7 @@ class KedroDolt:
         )
 
     def _commit_message(self, run_params: Dict[str, Any]):
-        import json
-        return f"Update from kedro run: {json.dumps(run_params['extra_params'])}"
+        return f"Update from kedro run: {run_params['run_id']}"
 
     @log_pymysql_error
     def _commit(self, message: str):
