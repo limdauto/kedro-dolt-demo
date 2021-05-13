@@ -97,7 +97,7 @@ Starting server with Config HP="localhost:3306"|U="root"|P=""|T="28800000"|R="fa
 ```
 
 The [catalog
-configuration](https://github.com/limdauto/kedro-dolt-demo/blob/main/conf/base/catalog.yml)
+configuration](https://github.com/dolthub/kedro-dolt-demo/blob/main/conf/base/catalog.yml)
 in `conf/catalog.yml` shows how we pass this sql connection as a
 credential to our data sources:
 
@@ -205,8 +205,8 @@ to efficiently surface modifications between tables:
 ```bash
 $ dolt diff HEAD HEAD^ example_test_x --limit 5
 diff --dolt a/example_test_x b/example_test_x
---- a/example_test_x @ phat5gjncsmcr6ke7hkm71kqi3p3fh2r
-+++ b/example_test_x @ ge6u7548i2g1nj3o8ge9ilanmj2hbta0
+--- a/example_test_x @ jc77hh54t97na1hs8i6k8b5pfrh7tiej
++++ b/example_test_x @ m3112s3uuird3rtjt28cdeitp5prp6td
 +-----+--------------+-------------+--------------+-------------+
 |     | sepal_length | sepal_width | petal_length | petal_width |
 +-----+--------------+-------------+--------------+-------------+
