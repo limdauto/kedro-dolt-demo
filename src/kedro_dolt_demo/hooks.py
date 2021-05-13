@@ -61,7 +61,10 @@ class KedroDolt:
 
     @hook_impl
     def before_pipeline_run(self, run_params: Dict[str, Any]):
-        if "branch" in run_params["extra_params"] and run_params["extra_params"]["branch"] is not None:
+        if (
+                "branch" in run_params["extra_params"] and
+                run_params["extra_params"]["branch"] is not None
+        ):
             self._branch = run_params["extra_params"]["branch"]
             self._original_branch = self._active_branch()
             self._checkout_branch(self._branch)
@@ -85,7 +88,8 @@ class KedroDolt:
         )
 
     def _commit_message(self, run_params: Dict[str, Any]):
-        return f"Update from kedro run: {run_params['run_id']}"
+        import json
+        return f"Update from kedro run: {json.dumps(run_params['extra_params'])}"
 
     @log_pymysql_error
     def _commit(self, message: str):
