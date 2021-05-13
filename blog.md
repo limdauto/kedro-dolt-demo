@@ -15,34 +15,35 @@ abilities of data scientists and engineers.
 
 Kedro is a workflow system that offers both quick prototyping
 and production scaling in a single tool. Code is written in Python,
-packaged into discrete “nodes,” and composed between inputs and
+packaged into discrete "nodes," and composed between inputs and
 outputs with Python pipelines.
 
 Data management is one instance where Kedro separates from other
-workflow managers. A `data catalog` encapsulates data source
+workflow managers. A "data catalog" encapsulates data source
 configuration, removing IO as a concern for data scientists.
 
-As a quick example, consider the “Dataset” below defined in a
+As a quick example, consider the `DataSet` below defined in our
 `catalog.yml`:
 
 ```python
 iris_data:
  type: pandas.CSVDataSet
- filepath: data/01_raw/iris.csv
+ filepath: "data/01_raw/iris.csv"
 ```
 
-Kedro will generate the `data` argument of `split_data`:
+Kedro connects `iris_data` as an input to the `split_data` node
+with the following declaration:
+
+```python
+node(func=split_data, inputs=["iris_data"], ...)
+```
+
+At runtime, the `data` argument of `split_data` will now be loaded according
+to the dataset configuration for our node input:
 
 ```python
 def split_data(data: pd.DataFrame, ratio: float) -> Dict[str, Any]:
     ...
-```
-
-By connecting the catalog `iris_data` as an input to the following node
-declaration:
-
-```python
-node(func=split_data, inputs=["iris_data"], ...)
 ```
 
 Cleanly delineating the concerns of data infrastructure and data science
@@ -74,29 +75,33 @@ project](https://kedro.readthedocs.io/en/stable/02_get_started/05_example_projec
 We will walk through our modifications shortly.
 
 To create our database, first
-[install](https://docs.dolthub.com/getting-started/installation) `dolt`:
+[install `dolt`](https://docs.dolthub.com/getting-started/installation):
 
 ```bash
 $ sudo bash -c 'curl -L https://github.com/dolthub/dolt/releases/latest/download/install.sh | sudo bash'
 ```
 
-We create our database and expose an sql-server at `root@localhost:3306/kedro_dolt_demo`
-by running the following lines in a separate window:
+We can create our database with an initialization call:
 
 ```bash
 $ dolt init
-$ dolt sql-server --max-connections=10
+Successfully initialized dolt data repository
+```
+
+and expose an sql-server at `root@localhost:3306/kedro_dolt_demo`
+by running the following line in a separate window:
+
+```bash
+$ dolt sql-server --max-connections=10 -l trace
+Starting server with Config HP="localhost:3306"|U="root"|P=""|T="28800000"|R="false"|L="trace"
 ```
 
 The [catalog
 configuration](https://github.com/limdauto/kedro-dolt-demo/blob/main/conf/base/catalog.yml)
-in `conf/catalog.yml` shows how we will connect to our database:
+in `conf/catalog.yml` shows how we pass this sql connection as a
+credential to our data sources:
 
 ```python
-iris_data:
-  type: pandas.CSVDataSet
-  filepath: data/01_raw/iris.csv
-
 example_test_x:
   type: pandas.SQLTableDataSet
   table_name: example_test_x
@@ -104,7 +109,6 @@ example_test_x:
     con: mysql+pymysql://root@localhost:3306/kedro_dolt_demo
   save_args:
     if_exists: replace
-...
 ```
 
 ## Plugin
@@ -144,8 +148,8 @@ def after_pipeline_run(self, run_params: Dict[str, Any]):
        self._checkout_branch(self._original_branch)
 ```
 
-A Dolt commit persists data in a way analogous to Git.
-Commits hold a database value, message, timestamp and parent
+A Dolt commit persists data analogous to a Git commit.
+Commits hold a database root value, message, timestamp and parent
 commit reference.
 
 By default, the Kedro-Dolt plugin will record an
@@ -196,7 +200,7 @@ Date:   Fri Apr 23 23:45:01 +0100 2021
 
 We ran our pipeline with two different hyperparameters so that we can
 compare the outputs with `dolt diff`. Diffs traverse the database
-to efficiently surface differences between tables:
+to efficiently surface modifications between tables:
 
 ```bash
 $ dolt diff HEAD HEAD^ example_test_x --limit 5
@@ -216,14 +220,24 @@ diff --dolt a/example_test_x b/example_test_x
 
 Dolt's [system
 tables](https://docs.dolthub.com/interfaces/sql/dolt-system-tables#dolt_diff_usdtablename)
-can often be a friendlier way to diff two commits:
+retrieve more programmatically useful diff outputs:
 
 ```bash
 $ dolt sql -q "
-    select * from dolt_diff_example_test_x
+    select to_sepal_width, from_sepal_width, diff_type, to_commit, from_commit
+    from dolt_diff_example_test_x
     where from_commit = hashof('HEAD^') and
           to_commit = hashof('HEAD')
     limit 5"
++----------------+------------------+-----------+----------------------------------+----------------------------------+
+| to_sepal_width | from_sepal_width | diff_type | to_commit                        | from_commit                      |
++----------------+------------------+-----------+----------------------------------+----------------------------------+
+| 3.3            | NULL             | added     | bku4billo5s1ldr3qkmej0gffi0urv1q | um0nq2pue9d8vgfsc878arosuala7c6e |
+| NULL           | 2.4              | removed   | bku4billo5s1ldr3qkmej0gffi0urv1q | um0nq2pue9d8vgfsc878arosuala7c6e |
+| NULL           | 3                | removed   | bku4billo5s1ldr3qkmej0gffi0urv1q | um0nq2pue9d8vgfsc878arosuala7c6e |
+| 3.5            | NULL             | added     | bku4billo5s1ldr3qkmej0gffi0urv1q | um0nq2pue9d8vgfsc878arosuala7c6e |
+| 3              | NULL             | added     | bku4billo5s1ldr3qkmej0gffi0urv1q | um0nq2pue9d8vgfsc878arosuala7c6e |
++----------------+------------------+-----------+----------------------------------+----------------------------------+
 ```
 
 ## Branching
@@ -261,7 +275,7 @@ statements to link dependencies using specific versions of data:
 ```python
 iris_predictions:
   type: pandas.SQLQueryDataSet
-  sql: “SELECT  * FROM example_test_y AS OF HASHOF('new')”
+  sql:"SELECT  * FROM example_test_y AS OF HASHOF('new')"
   credentials:
     con: mysql+pymysql://root@localhost:3306/kedro_dolt_demo
   save_args:
