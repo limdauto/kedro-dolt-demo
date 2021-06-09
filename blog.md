@@ -8,21 +8,28 @@ authorHref: "https://www.dolthub.com/team#max"
 # Introduction
 
 We are pleased to introduce a Kedro-Dolt plugin, a collaboration between
-Quantum Black and DoltHub designed to expand the data-versioning
-abilities of data scientists and engineers.
+[Quantum Black Labs](https://www.quantumblack.com/labs) and [DoltHub](https://www.dolthub.com/) designed to expand the data-versioning
+abilities of data scientists and engineers. You will find this a useful read if you are [A WHAT? Data engineer? ML Engineer] and it'll take about 5 minutes to read, by the end of which time, you'll know how to [DO WHAT?].
 
 # What is Kedro?
 
-Kedro is a workflow system that offers both quick prototyping
-and production scaling in a single tool. Code is written in Python,
-packaged into discrete "nodes," and composed between inputs and
-outputs with Python pipelines.
+[Kedro](https://kedro.readthedocs.io) is an open-source Python framework for creating reproducible, maintainable and modular data science code. It offers both quick prototyping and production scaling in a single tool. Code is written in Python, packaged into discrete "nodes," which can be combined into pipelines, whereupon Kedro organises their dependencies and execution order.
 
-Data management is one instance where Kedro separates from other
-workflow managers. A "data catalog" encapsulates data source
-configuration, removing IO as a concern for data scientists.
+Data management is one area where Kedro stands out from other
+workflow managers. Kedro's "data catalog" is a registry of all data sources that the project can use. It encapsulates data source configuration, removing IO as a concern for data scientists.
 
-As a quick example, consider the `DataSet` below defined in our
+Your datasets need to be registered so Kedro can load and use them. All Kedro projects have a `conf/base/catalog.yml` file, with each dataset described with the following information:
+
+
+* File location (path)
+* Parameters for the given dataset
+* Type of data
+* Versioning
+
+
+Kedro supports a number of datasets out of the box, and you can also add support for any proprietary data format or filesystem in your pipeline.
+
+As a quick example, consider the `DataSet` below, defined in our
 `catalog.yml`:
 
 ```python
@@ -48,18 +55,16 @@ def split_data(data: pd.DataFrame, ratio: float) -> Dict[str, Any]:
 
 Cleanly delineating the concerns of data infrastructure and data science
 is important for delivering data pipelines. Nodes, data sources, and
-pipelines can be customized, composed and executed on a variety of
+pipelines can be customised, composed and executed on a variety of
 backends with these simple building blocks.
 
 # What is Dolt?
 
-Dolt is an SQL database with Git-like versioning. Engineers use Dolt in
-machine learning workflows to version tabular data in a
-production-hardened database. Instead of producing new CSV's for every
-workflow run, save deltas between runs. Instead of copying files between
-folder namespaces, branch from and merged to a source database. Instead
-of hunting for quality bugs with scripts and expectation suites, run
-causational analysis on row-level diffs between two data versions.
+[Dolt](https://www.dolthub.com/) is an SQL database with Git-like versioning. Engineers use Dolt in machine learning workflows to version tabular data in a production-hardened database. Some of the benefits include the following: 
+
+* You don't need to produce new CSV files for every workflow run, instead you can save deltas between runs. 
+* No need to copy files between folder namespaces, since you can instead branch from, and merge to, a source database. 
+* Instead of hunting for quality bugs with scripts and expectation suites, you can run causational analysis on row-level diffs between two data versions.
 
 # Using the Kedro-Dolt Plugin
 
@@ -81,11 +86,11 @@ To create our database, first
 $ sudo bash -c 'curl -L https://github.com/dolthub/dolt/releases/latest/download/install.sh | sudo bash'
 ```
 
-We can create our database with an initialization call:
+We can create our database with an initialisation call:
 
 ```bash
 $ dolt init
-Successfully initialized dolt data repository
+Successfully initialised dolt data repository
 ```
 
 and expose an sql-server at `root@localhost:3306/kedro_dolt_demo`
@@ -117,8 +122,7 @@ Kedro uses [`pluggy`-style Hooks](https://pluggy.readthedocs.io/en/latest/)
 to register callbacks during stages of a
 workflow's lifecycle. The Kedro-Dolt plugin defines
 `before_pipeline_run` and `after_pipeline_run` methods to loop into
-workflow executions. More information on Kedro Hooks and the available
-lifecyle stages exposed can be found in the [Kedro
+workflow executions. You can find more information on Kedro Hooks and the lifecyle stages that are exposed in the [Kedro
 docs](https://kedro.readthedocs.io/en/latest/07_extend_kedro/02_hooks.html).
 
 Before the pipeline starts we can checkout a database branch if
@@ -173,7 +177,7 @@ HOOKS = (ProjectHooks(database=DOLT_DATABASE),)
 
 ## Diffs
 
-Now that we've initialized our repo and connected our hook,
+Now that we've initialised our repo and connected our hook,
 we can execute our workflow:
 
 ```bash
@@ -319,7 +323,7 @@ $ dolt sql -q "
 +----------------------------------+------------------------------------------------+
 ```
 
-If we wished to index commits by hyperparameter value, we could customize the
+If we wished to index commits by hyperparameter value, we could customise the
 `KedroDolt._commit_message()` method:
 
 ```python
@@ -342,7 +346,9 @@ $  dolt sql -q "select message from dolt_log limit 1"
 ## Conclusion
 
 The Kedro-Dolt plugin currently supports a limited set of features.
-We encourage you to [reach out on our
-Discord](https://discord.com/invite/RFwfYpu) if you are interested in a
+We encourage you to [reach out on the Kedro
+Discord channel](https://discord.gg/2QvVEdVEea) if you are interested in a
 more advanced plugin, want to see how to run Kedro against a production
 Dolt instance running like RDS, or just want to learn more about Dolt.
+
+If you want to find out more about Kedro, the community is a great place to start. You can also find the code in the [Kedro repository on Github](https://github.com/quantumblacklabs/kedro) and the documentation on [ReadTheDocs](https://kedro.readthedocs.io).
