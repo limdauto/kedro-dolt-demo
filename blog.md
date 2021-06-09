@@ -8,17 +8,30 @@ authorHref: "https://www.dolthub.com/team#max"
 # Introduction
 
 We are pleased to introduce a Kedro-Dolt plugin, a collaboration between
-[Quantum Black Labs](https://www.quantumblack.com/labs) and [DoltHub](https://www.dolthub.com/) designed to expand the data-versioning
-abilities of data scientists and engineers. You will find this a useful read if you are [A WHAT? Data engineer? ML Engineer] and it'll take about 5 minutes to read, by the end of which time, you'll know how to [DO WHAT?].
+[Quantum Black Labs](https://www.quantumblack.com/labs) and
+[DoltHub](https://www.dolthub.com/) designed to expand the data-versioning
+abilities of data scientists and engineers. You will find this useful
+if you operate complex data pipelines. It'll take about 5 minutes
+to read, by the end of which time, you'll know how to store data in Dolt
+and diff workflow results.
 
 # What is Kedro?
 
-[Kedro](https://kedro.readthedocs.io) is an open-source Python framework for creating reproducible, maintainable and modular data science code. It offers both quick prototyping and production scaling in a single tool. Code is written in Python, packaged into discrete "nodes," which can be combined into pipelines, whereupon Kedro organises their dependencies and execution order.
+[Kedro](https://kedro.readthedocs.io) is an open-source Python framework
+for creating reproducible, maintainable and modular data science code.
+It offers both quick prototyping and production scaling in a single tool.
+Code is written in Python, packaged into discrete "nodes," which can be
+combined into pipelines, whereupon Kedro organises their dependencies and
+execution order.
 
 Data management is one area where Kedro stands out from other
-workflow managers. Kedro's "data catalog" is a registry of all data sources that the project can use. It encapsulates data source configuration, removing IO as a concern for data scientists.
+workflow managers. Kedro's "data catalog" is a registry of all data
+sources that the project can use. It encapsulates data source
+configuration, removing IO as a concern for data scientists.
 
-Your datasets need to be registered so Kedro can load and use them. All Kedro projects have a `conf/base/catalog.yml` file, with each dataset described with the following information:
+Your datasets need to be registered so Kedro can load and use them. All
+Kedro projects have a `conf/base/catalog.yml` file, with each dataset
+described with the following information:
 
 
 * File location (path)
@@ -27,7 +40,8 @@ Your datasets need to be registered so Kedro can load and use them. All Kedro pr
 * Versioning
 
 
-Kedro supports a number of datasets out of the box, and you can also add support for any proprietary data format or filesystem in your pipeline.
+Kedro supports a number of datasets out of the box, and you can also add
+support for any proprietary data format or filesystem in your pipeline.
 
 As a quick example, consider the `DataSet` below, defined in our
 `catalog.yml`:
@@ -60,7 +74,9 @@ backends with these simple building blocks.
 
 # What is Dolt?
 
-[Dolt](https://www.dolthub.com/) is an SQL database with Git-like versioning. Engineers use Dolt in machine learning workflows to version tabular data in a production-hardened database. Some of the benefits include the following: 
+[Dolt](https://www.dolthub.com/) is an SQL database with Git-like versioning.
+Engineers use Dolt in machine learning workflows to version tabular data
+in a production-hardened database. Some of the benefits include the following:
 
 * You don't need to produce new CSV files for every workflow run, instead you can save deltas between runs. 
 * No need to copy files between folder namespaces, since you can instead branch from, and merge to, a source database. 
@@ -140,7 +156,8 @@ from kedro_dolt import DoltHook
 
 The Kedro-Dolt plugin defines
 `before_pipeline_run` and `after_pipeline_run` methods to loop into
-workflow executions. You can find more information on Kedro Hooks and the lifecyle stages that are exposed in the [Kedro
+workflow executions. You can find more information on Kedro Hooks and the
+lifecyle stages that are exposed in the [Kedro
 docs](https://kedro.readthedocs.io/en/latest/07_extend_kedro/02_hooks.html).
 
 Before the pipeline starts we can checkout a database branch if
@@ -369,4 +386,7 @@ Discord channel](https://discord.gg/2QvVEdVEea) if you are interested in a
 more advanced plugin, want to see how to run Kedro against a production
 Dolt instance running like RDS, or just want to learn more about Dolt.
 
-If you want to find out more about Kedro, the community is a great place to start. You can also find the code in the [Kedro repository on Github](https://github.com/quantumblacklabs/kedro) and the documentation on [ReadTheDocs](https://kedro.readthedocs.io).
+If you want to find out more about Kedro, the community is a great place
+to start. You can also find the code in the [Kedro repository on
+Github](https://github.com/quantumblacklabs/kedro) and the documentation
+on [ReadTheDocs](https://kedro.readthedocs.io).
