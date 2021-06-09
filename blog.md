@@ -70,6 +70,12 @@ You can clone our project to follow along:
 $ git clone git@github.com:dolthub/kedro-dolt-demo.git
 ```
 
+Python depenencies are listed in `src/requirements.txt`:
+
+```bash
+pip install -r src/requirements.txt
+```
+
 This workflow was originally built using the [Iris starter
 project](https://kedro.readthedocs.io/en/stable/02_get_started/05_example_project.html).
 We will walk through our modifications shortly.
@@ -115,7 +121,19 @@ example_test_x:
 
 Kedro uses [`pluggy`-style Hooks](https://pluggy.readthedocs.io/en/latest/)
 to register callbacks during stages of a
-workflow's lifecycle. The Kedro-Dolt plugin defines
+workflow's lifecycle.
+
+We made our own plugin released as a PyPi package, `kedro-dolt`:
+
+```bash
+pip install kedro-dolt
+```
+
+```python
+from kedro_dolt import DoltHook
+```
+
+The Kedro-Dolt plugin defines
 `before_pipeline_run` and `after_pipeline_run` methods to loop into
 workflow executions. More information on Kedro Hooks and the available
 lifecyle stages exposed can be found in the [Kedro
@@ -320,7 +338,7 @@ $ dolt sql -q "
 ```
 
 If we wished to index commits by hyperparameter value, we could customize the
-`KedroDolt._commit_message()` method:
+`DoltHook._commit_message()` method:
 
 ```python
 def _commit_message(self, run_params: Dict[str, Any]):
