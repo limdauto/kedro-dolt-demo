@@ -347,7 +347,7 @@ $  dolt sql -q "select message from dolt_log limit 1"
 
 The Kedro-Dolt plugin currently supports a limited set of features.
 We encourage you to [reach out on the Kedro
-Discord channel](https://discord.com/invite/RFwfYpu) if you are interested in a
+Discord channel](https://discord.gg/2QvVEdVEea) if you are interested in a
 more advanced plugin, want to see how to run Kedro against a production
 Dolt instance running like RDS, or just want to learn more about Dolt.
 
